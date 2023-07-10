@@ -107,3 +107,7 @@ if((*pte & PTE_V) == 0)
 （7）**pid**为1是“**init**”进程，**pid**为2是“**shell**”进程  
 
 （8）最终可以将（3）中的图变成如下的流程：  
+![](https://github.com/2351889401/6.S081-Lab-lazy_page_allocation/blob/main/images/think2.png)   
+
+
+**2.** 
