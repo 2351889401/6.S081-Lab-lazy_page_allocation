@@ -45,3 +45,39 @@ malloc(uint nbytes)
 发现这确实是一条“**store**”指令，与前面**scause**值15对应上了。再看一下，该指令是属于“**malloc()**”函数的一部分。并且**malloc**函数中调用了“**sbrk()**”。  
   
 （3）所以我们现在考虑的问题流程是这样的（**pid**和**stval**的分析在后面）：  
+![](https://github.com/2351889401/6.S081-Lab-lazy_page_allocation/blob/main/images/think1.png)  
+我们考虑 “**命令行程序**” 的执行流程：  
+“**fork()**” **->** “**exec()**”  
+经过测试和最开始的图片中的“**pid=3**”，说明子进程成功完成了“**fork()**”这一步，而“**exec()**”中的测试语句没有输出，说明问题发生在“**fork**”之后，“**exec**”之前。  
+
+（4）我们回到“**shell**”程序中，“**main**”函数中主要是下面的循环：  
+```
+// Read and run input commands.
+  while(getcmd(buf, sizeof(buf)) >= 0){
+    if(buf[0] == 'c' && buf[1] == 'd' && buf[2] == ' '){
+      // Chdir must be called by the parent, not the child.
+      buf[strlen(buf)-1] = 0;  // chop \n
+      if(chdir(buf+3) < 0)
+        fprintf(2, "cannot cd %s\n", buf+3);
+      continue;
+    }
+    if(fork1() == 0)
+      runcmd(parsecmd(buf));
+    wait(0);
+  }
+```
+其中的“**fork1()**”完成“**fork()**”的任务，所以问题定位可能就在于下面的 “**runcmd(parsecmd(buf));**” 语句。  
+在“**parsecmd()**”函数的执行流程中，最终定位到“**execcmd()**”函数  
+```
+struct cmd*
+execcmd(void)
+{
+  struct execcmd *cmd;
+
+  cmd = malloc(sizeof(*cmd));
+  memset(cmd, 0, sizeof(*cmd));
+  cmd->type = EXEC;
+  return (struct cmd*)cmd;
+}
+```
+该函数的作用是申请空间存放 “**命令行参数**”。可以看到里面存在“**malloc()**”函数，至此，可以解决上图中的第1个“**?**”了。
