@@ -102,3 +102,8 @@ if((*pte & PTE_V) == 0)
 ![](https://github.com/2351889401/6.S081-Lab-lazy_page_allocation/blob/main/images/xiugai.png)   
 命令行输入“**echo hi**”，输出为：  
 ![](https://github.com/2351889401/6.S081-Lab-lazy_page_allocation/blob/main/images/xiugai_result.png)  
+是父进程在回收子进程的内容，并且有4页已经成功回收了，说明父进程原来就是4页内存。  
+
+（7）**pid**为1是“**init**”进程，**pid**为2是“**shell**”进程  
+
+（8）最终可以将（3）中的图变成如下的流程：  
