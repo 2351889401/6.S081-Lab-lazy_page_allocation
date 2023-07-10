@@ -99,3 +99,6 @@ if((*pte & PTE_V) == 0)
 
 （6）这里解释为什么父进程是4页内存？  
 修改“**kernel/vm.c/uvmunmap()**”函数如下图：  
+![](https://github.com/2351889401/6.S081-Lab-lazy_page_allocation/blob/main/images/xiugai.png)   
+命令行输入“**echo hi**”，输出为：  
+![](https://github.com/2351889401/6.S081-Lab-lazy_page_allocation/blob/main/images/xiugai_result.png)  
