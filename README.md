@@ -26,6 +26,22 @@ sys_sbrk(void)
 此时，在命令行中输入“**echo hi**”，会出现下面的错误：  
 ![](https://github.com/2351889401/6.S081-Lab-lazy_page_allocation/blob/main/images/echo_hi_fault.png)
   
-分析为什么修改了“**sys_sbrk()**”会导致命令行输入“**echo hi**”出现上图的错误  
-（1）**scause**值为**15**，查阅《**RISC-V Instruction Set Manual**》，发现这个原因是“**store/AMO page fault**”  
-（2）
+分析为什么修改了“**sys_sbrk()**”会导致命令行输入“**echo hi**”出现上图的错误？  
+（1）上图中**scause**值为**15**，查阅《**RISC-V Instruction Set Manual**》，发现这个原因是“**store/AMO page fault**”，也就是是一条存储指令引发的异常  
+  
+（2）**sepc**寄存器的值是“**0x12ac**”，标志着发生异常时应用程序的**PC**值。我们是执行“**shell**”程序时发生的异常，所以应当去“**sh.asm**”中查看“**0x12ac**”地址发生了什么。  
+```
+void*
+malloc(uint nbytes)
+{
+    ...
+  p = sbrk(nu * sizeof(Header));
+    ...
+  hp->s.size = nu;
+    12ac:	01652423          	sw	s6,8(a0)
+    ...
+}
+```  
+发现这确实是一条“**store**”指令，与前面**scause**值15对应上了。再看一下，该指令是属于“**malloc()**”函数的一部分。并且**malloc**函数中调用了“**sbrk()**”。  
+  
+（3）所以我们现在考虑的问题流程是这样的：  
