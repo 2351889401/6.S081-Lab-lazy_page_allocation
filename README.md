@@ -24,3 +24,8 @@ sys_sbrk(void)
 }
 ```
 此时，在命令行中输入“**echo hi**”，会出现下面的错误：
+![](https://github.com/2351889401/6.S081-Lab-lazy_page_allocation/blob/main/images/echo_hi_fault.png)
+  
+分析为什么修改了“**sys_sbrk()**”会导致命令行输入“**echo hi**”出现上图的错误  
+（1）**scause**值为**15**，查阅《**RISC-V Instruction Set Manual**》，发现这个原因是“**store/AMO page fault**”  
+（2）
