@@ -80,4 +80,22 @@ execcmd(void)
   return (struct cmd*)cmd;
 }
 ```
-该函数的作用是申请空间存放 “**命令行参数**”。可以看到里面存在“**malloc()**”函数，至此，可以解决上图中的第1个“**?**”了。
+该函数的作用是申请空间存放 “**命令行参数**”。可以看到里面存在“**malloc()**”函数，至此，可以解决（3）的图中的第1个“**?**”了。  
+  
+（5）未修改的**xv6**内核对异常的反映是直接杀死出现异常的进程。在“**kernel/trap.c/usertrap()**”中：  
+```
+else {
+      printf("usertrap(): unexpected scause %p pid=%d\n", r_scause(), p->pid);
+      printf("            sepc=%p stval=%p\n", r_sepc(), r_stval());
+      p->killed = 1;
+    }
+```
+因此，该进程的内存空间会被回收。除了“fork”父进程的4页内存（下面会解释为什么是4页）可以正常回收，在该子进程中通过“**sbrk**”申请的内存都无法正常释放，也就是在“**kernel/vm.c/uvmunmap()**”函数中会走到这一步：
+```
+if((*pte & PTE_V) == 0) 
+    panic("uvmunmap: not mapped");
+```
+至此，（3）中的图中的第2个“**?**”解决了。  
+
+（6）这里解释为什么父进程是4页内存？  
+修改“**kernel/vm.c/uvmunmap()**”函数如下图：  
