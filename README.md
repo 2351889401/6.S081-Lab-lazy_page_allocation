@@ -142,3 +142,5 @@ if(r_scause() == 8){
 }
 ```  
 此时，在命令行输入“**echo hi**”，其结果如下图：  
+![](https://github.com/2351889401/6.S081-Lab-lazy_page_allocation/blob/main/images/echo_hi_ok.png)    
+  
