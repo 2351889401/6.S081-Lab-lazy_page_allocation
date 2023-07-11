@@ -381,7 +381,7 @@ uvmcopy(pagetable_t old, pagetable_t new, uint64 sz)
 ```
 
 * **kernel/sysfile.c**中的“**sys_read、sys_write、sys_pipe**”  
-因为在这些系统调用中都可能使用新申请而尚未分配内存的地址空间
+因为在这些系统调用中都可能使用新申请而尚未分配内存的地址空间  
 “**sys_read()**”
 ```
 uint64
