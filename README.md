@@ -110,4 +110,34 @@ if((*pte & PTE_V) == 0)
 ![](https://github.com/2351889401/6.S081-Lab-lazy_page_allocation/blob/main/images/think2.png)   
 
 
-**2.** 
+**2.** 修改“**kernel/trap.c/usertrap()**”和内核中的代码让**echo hi**正常输出  
+  
+这里主要给出的是“**trap.c/usertrap()**”中的修改，而且修改的并不完善；而“**kernel/vm.c**”中的修改主要在下一个实验内容介绍。因为这里仅仅让**echo hi**工作，但实际上想让内核正常运行还有很多的情况没有考虑到。  
+```
+if(r_scause() == 8){
+    // system call
+
+    ...
+  } else if((which_dev = devintr()) != 0){
+    // ok
+  } else {
+    if(r_scause() == 13 || r_scause() == 15) {
+        uint64 va_fault = r_stval(); //获取引起缺页异常的虚拟地址
+        uint64 down = PGROUNDDOWN(va_fault); //取其基址
+        char* mem;
+        mem = (char*)kalloc();
+        memset(mem, 0, PGSIZE); //分配物理内存并且初始化
+        mappages(p->pagetable, down, PGSIZE, (uint64)mem, PTE_W|PTE_X|PTE_R|PTE_U); //在页表中注册 虚拟地址基址与物理地址对应上
+        printf("usertrap(): unexpected scause %p pid=%d\n", r_scause(), p->pid); 
+        printf("            sepc=%p stval=%p\n", r_sepc(), r_stval());
+        vmprint(p->pagetable, 1); // 页表实验中的函数 可以查看当前页表的内容
+        printf("p->sz: %d\n", p->sz/PGSIZE); //查看当前进程一共的内存大小 可能并没有分配那么多
+    }  
+    else {
+      printf("usertrap(): unexpected scause %p pid=%d\n", r_scause(), p->pid);
+      printf("            sepc=%p stval=%p\n", r_sepc(), r_stval());
+      p->killed = 1;
+    }
+}
+```
+此时，在命令行输入“**echo hi**”，其结果如下图：  
