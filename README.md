@@ -495,3 +495,5 @@ sys_pipe(void)
 ```
   
 到此，所有的代码修改完毕，结果如下图：  
+![](https://github.com/2351889401/6.S081-Lab-lazy_page_allocation/blob/main/images/lazytests.png)  
+![](https://github.com/2351889401/6.S081-Lab-lazy_page_allocation/blob/main/images/usertests.png) 
